@@ -1,2 +1,2 @@
 # kubuqi.github.io
-Just yet another personal site about random thoughts.
+Just yet another personal site about my random thoughts.
