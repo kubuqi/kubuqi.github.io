@@ -1,0 +1,32 @@
+I hate to change a single line of code, and then wait for more than 1 hour to see it in action.
+
+When I was in a tight development iteration cycle, trying out different ideas, this slowness drove me mad. So I decided to see if I can made my life easier. Fortunately, I just got a so called SDA environment — working directly from code server, which enabled me to exam the build process closely.
+
+My idea was simple: firstly to measure the build process, then to look for areas of improvements, and finally to go figure if there was a way to enhance it.
+
+1. Measuring the build process. 
+
+The building process have a nice log, but it lacks timestamp, which makes it hard to measure the time spent on every tasks.  Adding timestamp should provide good accuracy on most tasks, but lacking of knowledge in the build subsystem, I didn’t find an easy way to do this. Instead I relied on the old school linux methods: I "tail –f" the log file to redirect the real tiem output to a pipe, and append timestamp to the very begging of every line.
+
+[luzhan@somewhere BUILD_LOGS]$ unbuffer tail -f Sep-22-2015-01\:09\:06-PDT_build.log | timestamper > timed.log
+
+Two things deserve explanation here. Firstly, the “unbuffer” command. This is to force the shell to use an unbuffered pipe, so that every new line in the build log can be directed to the timestamper as soon as possible, and this should results in more accurate timestamps. Secondly, the “timestamper” command. This is actually a shell function I put into my .bashrc, which append a timestamp in front of a given input. The shell function is:
+
+timestamper()
+{
+    awk '{now=strftime("%F %T ");sub(/^/, now);print}'
+}
+
+
+2. Identify the bottle neck
+
+With the measurement — the timestamps — in place, just browsing the log with my naked eyes looking for big time gaps reveals one obvious heavy task: check_build_compat.pl. The task is to compare the current meta xml file with all previously released version, looking for any ISSU breakages. Currently this xml file is a 8MB text file, and this task has to compare every single entry of this file with 33 previous versions. I noticed this task took around 40 minutes to complete, so if I were able to improve this, I should see significant build speed increment. Manually executing this task confimred that it indeed took 38 minutes to complete. 
+
+
+3. Improve bottle neck
+
+This heavy task is a Perl script, of a language I have zero knowledge. But google is a good friend of mine. I had two options when approaching this job. Firstly, given it compares 33 xml files one by one, it is an embarrassingly parallel task. I can split the task and run them simultaneously with multiple threads, so as to take full advantage of my powerful 32-core build server. The other is to seek for a better xml parser other than XPath. Turns out, multi-thread programming in perl is discouraged. On the other hand, XPath is considered to be slow and outdated, and LibXML is recommended. It appeared to be a big ask for me, given my zero knowledge in Perl.  But again, looking up some samples with google, and repeatedly test it on the code server, I was able to make it happen. It was a delighting result to see, as the LibXML version of this script was indeed much faster: it finished the job in 2 minutes, compared with the 40 minutes with XPath. The overall rebuild time was cut from 58 minutes to 28 minutes. 
+
+
+Ending words: 
+If you can monitor and measure something then you CAN improve it … James Sandgathe
