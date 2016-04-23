@@ -1,2 +1,3 @@
 # kubuqi.github.io
-Just yet another personal site about my random thoughts.
+Host my personal pages here. 
+Thank you GitHub!
