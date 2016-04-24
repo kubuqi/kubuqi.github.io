@@ -1,0 +1,225 @@
+Index: GkClient.cxx
+===================================================================
+RCS file: /cvsroot/openh323gk/openh323gk/GkClient.cxx,v
+retrieving revision 1.51
+diff -r1.51 GkClient.cxx
+32c32
+< const char* const EndpointSection = "Endpoint";
+---
+> const char* const EndpointSection = "Endpoint";	// this will be need by NATClient only. GkClient has its own EndpointSection
+287,289c287,292
+< 	RasServer* rasSrv
+< 	) : m_rasSrv(rasSrv), m_registered(false), m_discoveryComplete(false),
+< 	m_ttl(GkConfig()->GetInteger(EndpointSection, "TimeToLive", DEFAULT_TTL)),
+---
+> 	RasServer* rasSrv,
+> 	const PString & sectionName	// ipgw added
+> 	) : 
+> 	m_rasSrv(rasSrv), EndpointSection(sectionName), 	// ipgw added
+> 	m_registered(false), m_discoveryComplete(false),
+> 	m_ttl(GkConfig()->GetInteger(sectionName, "TimeToLive", DEFAULT_TTL)),
+291c294
+< 	m_retry(GkConfig()->GetInteger(EndpointSection, "RRQRetryInterval", DEFAULT_RRQ_RETRY))
+---
+> 	m_retry(GkConfig()->GetInteger(sectionName, "RRQRetryInterval", DEFAULT_RRQ_RETRY))
+292a296,298
+> 	InboundPrefixes=GkConfig()->GetString(EndpointSection, "InboundPrefix", "").Tokenise(",;", FALSE);	// ipgw added
+> 	OutboundPrefixes=GkConfig()->GetString(EndpointSection, "OutboundPrefix", "").Tokenise(",;", FALSE);	// ipgw added
+> 
+357a364,365
+> 	InboundPrefixes=GkConfig()->GetString(EndpointSection, "InboundPrefix", "").Tokenise(",;", FALSE);	// ipgw added
+> 	OutboundPrefixes=GkConfig()->GetString(EndpointSection, "OutboundPrefix", "").Tokenise(",;", FALSE);	// ipgw added
+722,723c730,734
+< 		const PString prefix(GkConfig()->GetString(EndpointSection, "Prefix", ""));
+< 		const PStringArray prefixes=prefix.Tokenise(",;", FALSE);
+---
+> 
+> 		// ipgw removed : const PString prefix(GkConfig()->GetString(EndpointSection, "Prefix", ""));
+> 		// ipgw removed : const PStringArray prefixes=prefix.Tokenise(",;", FALSE);
+> 		const PStringArray prefixes = InboundPrefixes;	// ipgw added
+> 
+1025a1037,1054
+> 
+> // ipgw added
+> bool GkClient::OutboundPrefixMatch(const H225_ArrayOf_AliasAddress * addr) const
+> {
+> 	const H225_ArrayOf_AliasAddress & a = *addr;
+> 	for (PINDEX i = 0; i < a.GetSize(); i++)
+> 		if (a[i].GetTag() == H225_AliasAddress::e_dialedDigits) {
+> 			PString AliasStr = H323GetAliasAddressString(a[i]);
+> 			PINDEX prefixSize = OutboundPrefixes.GetSize();
+> 			for (int i=0; i<OutboundPrefixes.GetSize(); i++) {
+> 				if (strncmp(AliasStr, OutboundPrefixes[i], OutboundPrefixes[i].GetLength())==0)
+> 					return true;
+> 			}
+> 		}
+> 
+> 	return false;
+> }
+> // ipgw added
+Index: GkClient.h
+===================================================================
+RCS file: /cvsroot/openh323gk/openh323gk/GkClient.h,v
+retrieving revision 1.24
+diff -r1.24 GkClient.h
+50c50
+< 	GkClient(RasServer *);
+---
+> 	GkClient(RasServer *, const PString & sectionName="Endpoint");// ipgw changed from: GkClient(RasServer *);
+72a73,74
+> 	bool OutboundPrefixMatch(const H225_ArrayOf_AliasAddress * a) const;   // ipgw added
+> 
+171a174,176
+> 
+> 	const char * EndpointSection;					 // ipgw added.
+> 	PStringArray InboundPrefixes, OutboundPrefixes;  // ipgw added
+Index: RasSrv.cxx
+===================================================================
+RCS file: /cvsroot/openh323gk/openh323gk/RasSrv.cxx,v
+retrieving revision 1.130
+diff -r1.130 RasSrv.cxx
+641c641
+< 	delete gkClient;
+---
+> 	DeleteObjectsInContainer(gkClients);//ipgw changed from : delete gkClient;
+711c711
+< 	gkClient->CheckRegistration();
+---
+> 	ForEachInContainer(gkClients, mem_fun(&GkClient::CheckRegistration));// ipgw changed from :gkClient->CheckRegistration();
+787a788,796
+> 	// ipgw added 
+> 	DeleteObjectsInContainer(gkClients);
+> 	PStringToString gwlist( GkConfig()->GetAllKeyValues("GatewayInterfaces"));
+> 	for ( int i=0; i<gwlist.GetSize(); i++) {
+> 		GkClient * client = new GkClient(this, gwlist.GetDataAt(i));
+> 		client->OnReload();
+> 		gkClients.push_back(client);
+> 	}
+> 	// ipgw changed from: gkClient->OnReload();
+789d797
+< 	gkClient->OnReload();
+996c1004,1026
+< 	return gkClient->GetParent();
+---
+> 	// ipgw changed from : return gkClient->GetParent();
+> 	PString result;
+> 	for (std::vector<GkClient*>::const_iterator it=gkClients.begin(); it!=gkClients.end(); it++) 
+> 		result += (*it)->GetParent() + "\r\n";
+> 	return result;
+> 	// ipgw
+> }
+> 
+> //{{ ipgw added
+> GkClient *RasServer::GetGkClient(const PIPSocket::Address& addr)
+> {
+> 	for (std::vector<GkClient*>::iterator it=gkClients.begin(); it!=gkClients.end(); ++it)
+> 		if ((*it)->CheckFrom(addr))
+> 			return (*it);
+> 	return *gkClients.begin();	// TODO: not good enough
+> }
+> 
+> const GkClient *RasServer::GetGkClient(const PIPSocket::Address& addr) const
+> {
+> 	for (std::vector<GkClient*>::const_iterator it=gkClients.begin(); it!=gkClients.end(); ++it)
+> 		if ((*it)->CheckFrom(addr))
+> 			return (*it);
+> 	return *gkClients.begin();	// TODO: not good enough
+997a1028
+> //}} ipgw added
+1057c1088
+< 	gkClient = new GkClient(this);
+---
+> 	// ipgw removed , this will be created in LoadConfig() : gkClient = new GkClient(this);
+1076,1077c1107,1113
+< 	if (gkClient->IsRegistered())
+< 		gkClient->SendURQ();
+---
+> //{{ ipgw changed from:
+> //	if (gkClient->IsRegistered())
+> //		gkClient->SendURQ();
+> 	for (std::vector<GkClient*>::iterator it=gkClients.begin(); it!=gkClients.end(); it++) 
+> 		if ( (*it)->IsRegistered() )
+> 			(*it)->SendURQ();
+> //}} ipgw changed
+1194c1230
+< 			gkClient->CheckRegistration();
+---
+> 			ForEachInContainer(gkClients, mem_fun(&GkClient::CheckRegistration));// ipgw changed from :gkClient->CheckRegistration();
+Index: RasSrv.h
+===================================================================
+RCS file: /cvsroot/openh323gk/openh323gk/RasSrv.h,v
+retrieving revision 1.36
+diff -r1.36 RasSrv.h
+112c112,117
+< 	GkClient *GetGkClient() { return gkClient; }
+---
+> 
+> 	// ipgw: TODO: add address as parameter to select GkClient ?
+> 	GkClient *GetGkClient(const PIPSocket::Address&);	    // ipgw changed from: GkClient *GetGkClient() { return gkClient; }
+> 	const GkClient *GetGkClient(const PIPSocket::Address&) const;
+> 	std::vector<GkClient*>& GetGkClients() { return gkClients; } // ipgw added
+> 
+115d119
+< 	const GkClient *GetGkClient() const { return gkClient; }
+222c226
+< 	GkClient *gkClient;
+---
+> 	std::vector<GkClient *> gkClients;		// ipgw changed from: GkClient *gkClient;
+Index: RasTbl.h
+===================================================================
+RCS file: /cvsroot/openh323gk/openh323gk/RasTbl.h,v
+retrieving revision 1.83
+diff -r1.83 RasTbl.h
+548c548
+< 	bool CompareCRV(WORD crv) const;
+---
+> 	bool CompareCRV(int crv) const;
+1133c1133
+< inline bool CallRec::CompareCRV(WORD crv) const
+---
+> inline bool CallRec::CompareCRV(int crv) const
+Index: Routing.cxx
+===================================================================
+RCS file: /cvsroot/openh323gk/openh323gk/Routing.cxx,v
+retrieving revision 1.12
+diff -r1.12 Routing.cxx
+349c349,351
+< 	GkClient *m_gkClient;
+---
+> 	// ipgw changed from: GkClient *m_gkClient;
+> 	std::vector<GkClient*> m_gkClients;
+> 
+354c356
+< 	m_gkClient = RasServer::Instance()->GetGkClient();
+---
+> 	m_gkClients = RasServer::Instance()->GetGkClients();	// ipgw changed.
+360c362
+< 	return m_gkClient->IsRegistered();
+---
+> 	return true;	// ipgw changed from: return m_gkClient->IsRegistered();
+365c367
+< 	return m_gkClient->SendARQ(arq_obj);
+---
+> 	return false;// ipgw: we do not process this request : return m_gkClient->SendARQ(arq_obj);
+370c372
+< 	return m_gkClient->SendLRQ(lrq_obj);
+---
+> 	return false;// ipgw: we do not process this request : return m_gkClient->SendLRQ(lrq_obj);
+375c377,386
+< 	return !(setup_obj.GetFlags() & RoutingRequest::e_fromParent) && m_gkClient->SendARQ(setup_obj);
+---
+> 	//{{ ipgw changed from: 	return !(setup_obj.GetFlags() & RoutingRequest::e_fromParent) && m_gkClient->SendARQ(setup_obj);
+> 	H225_Setup_UUIE & setup = setup_obj.GetRequest();
+> 	if (!setup.HasOptionalField(H225_Setup_UUIE::e_destinationAddress))
+> 		return false;
+> 
+> 	H225_ArrayOf_AliasAddress & addr = setup.m_destinationAddress;
+> 	std::vector<GkClient*>::iterator it = find_if(m_gkClients.begin(), m_gkClients.end(), bind2nd(mem_fun(&GkClient::OutboundPrefixMatch),&addr));
+> 	if (it==m_gkClients.end()) return false;
+> 	return (*it)->SendARQ(setup_obj);
+> 	//}} ipgw changed
+380c391,392
+< 	return !(facility_obj.GetFlags() & RoutingRequest::e_fromParent) && m_gkClient->SendARQ(facility_obj);
+---
+> 	// ipgw: what is this for ?
+> 	return false;// ipgw: we do not process this request : return !(facility_obj.GetFlags() & RoutingRequest::e_fromParent) && m_gkClient->SendARQ(facility_obj);
