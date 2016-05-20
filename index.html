@@ -34,30 +34,43 @@
         </div>
         <article class="markdown-body">
           <h3>
-<a id="Summary" class="anchor" href="#Summary" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Summary</h3>
-
-<p>Over 16 years of software development experience in building embedded systems and networking devices as IP routers/switches, video streamers, IP telephony devices and Windows clients.</p>
-<p>Specialties in platform/system/infrastructure software, networking software, Linux kernel, high performance server design, software performance profiling and system tuning.</p>
-<p>Passionate in building stuff to make impacts.</p>
-
+            <a id="Summary" class="anchor" href="#Summary" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Summary</h3>
+            <p>
+                •	Over 16 years of work experience in IT field in software development and networking.<br />
+                •	Platform/System/Infrastructure software design.<br />
+                •	Linux kernel development.<br />
+                •	Linux system tuning and software performance profiling.<br />
+                •	C/C++/Java experience.<br />
+                •	Cisco Routing & Switching, Video Streaming, VoIP.<br />
+                •	Quick learner and result oriented.<br />
+            </p>
 <h3>
 <a id="cisco" class="anchor" href="#cisco" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Cisco Systems</h3>
 <p>
-  Enterprise Networking Group, July 2010 – Present (5 years 10 months)<br>
-  IOS-XE Infrastructure & Layer 2 Networking.<br>
-  - Linux based infrastructures to support networking functionality development. Performance tuning, memory profiling, trouble shooting.<br>
-  - Layer 2 networking software developments. Ethernet CFM, AToM, VPLS, Ethernet Services.<br>
+    <h5>Enterprise Networking Group, July 2010 – Present (5 years 10 months)</h5>
+    I worked on <a href="http://www.cisco.com/c/en/us/products/collateral/ios-nx-os-software/ios-xe-3sg/QA_C67-622903.html">the networking OS</a> for Cisco enterprise routers & switches like ASR1K, ASR900, ISR-4K and cBR-8, and more to come with project Polaris.<br />
+    I owned infrastructures which support networking features development, including:<br />
+    - Forwarding managers – the core IOS-XE programming schedulers.<br />
+    - IPC, named memory allocation, chunk allocator, in-memory DB, in-service-software-upgrade…<br />
+    - Memory usage profiling and debugging.<br />
+    - Performance analysis and trouble shooting.<br />
+    I was the infra go-to guy, and I provided infrastructure support for over 16 major releases - XE3.2 through XE3.18.<br />
+    I took initiative to refactor interface manager code and CFM code; in both cases thousands of lines of code were killed. I <a href="https://github.com/kubuqi/kubuqi.github.io/wiki/Measure-to-Improve:-How-I-cut-Binos-Rebuild-Time-by-50%25">enhanced our building script</a> to cut rebuild time by 50%, which affects ~1000 developer’s daily work.<br />
+    Owner of L2 networking technologies including CFM and AToM, also worked on VPLS, Q-in-Q and Bridge-Domain.<br />
+
 </p>
 <p>
-  Video and Content Networking BU, January 2008 – June 2010 (2 years 6 months)<br>
-  Linux Kernel Streaming<br>
-  - Enhance performance, support new features, fix kdbs.<br>
-  - Implemented the tcp send offload feature which reduced cpu usage by 50%.<br>
-  - Took initiative to restructure the DSS Live Engine to scale out the load over multiple CPU cores.<br>
-  - Diagnosed bottle necks in user space, gave solutions and reduced cpu usage from 40% to 4%.<br>
+    <h5>Video and Content Networking BU, January 2008 – June 2010 (2 years 6 months)</h5>
+    I worked on Cisco Content Delivery System, particularly in video streaming from both kernel and user space.<br />
+    I made following performance enhancements.<br />
+    - TCP send offload, which reduced CPU usage by 50%.<br />
+    - Offload live streaming channel traffic over multiple CPU cores.<br />
+    - Developed tools to stress the system, identified bottle necks and improved it, which effectively cut CPU usage from 40% to 4%.<br />
+    Frame lost debuggings.<br />
+    Fix kernel coredumps.<br />
 </p>
 <p>
-  IPC BU, June 2005 – December 2007 (2 years 7 months)<br>
+    <h5>IPC BU, June 2005 – December 2007 (2 years 7 months)</h5>
   IP telephony gateway<br>
   - Lead the call processing team to accomplish the H.248 project on time with decent quality.<br>
   - Acting as Design Authority in MGCP/H.248/GTD to provide technical consulting to peers.<br>
@@ -65,21 +78,22 @@
   - H323, SIP, SS7 call signalling.<br>
 </p>
 
-<h3>
-<a id="aiainfo" class="anchor" href="#aiainfo" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>AsiaInfo
-</h3>
-May 2003 – May 2005 (2 years 1 month)<br>
-- Design & implementation our C++ based high performance H323 Gatekeeper on Linux.<br> 
-- Refactoring existing code to offload media traffic to a dedicated proxy device.<br>
 
-<h3>
-<a id="mediafair" class="anchor" href="#mediafair" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Media Fair
-</h3>
-October 2001 – May 2003 (1 year 8 months)<br>
-Built the Fax broadcast system from scratch<br>
-- A Windows fax client that intercepts the system print outputs, convert them into fax jobs and uploads to fax server.<br>
-- A multi-threaded fax server tat receives the fax jobs, and schedule them for outbound via E1/T1 fax boards.<br>
-- Authentication, accounting and job reports.
+<h3><a id="aiainfo" class="anchor" href="#aiainfo" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>AsiaInfo, Video Conferecing Server, May 2003 – May 2005 (2 years 1 month)</h3><br>
+I worked on a high performance H323 Gatekeeper on Linux in C++, with multi-thread server programming and STL.<br />
+I designed & implemented a dedicated media proxy to work with the Gatekeeper to offload media traffic, which effectively scaled out our system capacity.<br />
+
+<h3><a id="mediafair" class="anchor" href="#mediafair" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Media Fair, Fax Broadcast System, October 2001 – May 2003 (1 year 8 months)</h3>
+I took initiative to rewrite from scratch our fax broadcast system. This outperformed our old system by 400%, was capable of sending 20,000 fax jobs per day, and generated all revenue for MeiaFair.<br />
+It was a multi-threaded Win32 server, worked with variety types of fax boards, capable of on-demand page rendering, an with multiple job report options.<br />
+I also built a win32 fax client which intercepts the print driver to generate the fax jobs, and uploads to outbound server.<br />
+
+<h3><a id="yestock" class="anchor" href="#yestock" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Legend-Yestock, Java/C++ Developer, October 2000 – October 2001 (1 year)</h3>
+Financial Information eXchange protocol Engine – a C++ core service with Java and C++ libraries to talk with the Engine via socket.<br />
+EESTART (Financial Web Portal) -- AIX + IBM HTTP Server + WebSphere + Oracle, with Servlets, JSP, EJB, JDBC, Applets.<br />
+
+<h3><a id="sinocfo" class="anchor" href="#sinocfo" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>SinoCFO, Microsoft Visual C++ Developer, February 2000 – October 2000 (1 year)</h3>
+StockStar – A Win32 stock quote client based on MFC, with advanced GUI, and a multi-threaded quote server.<br />
 
         </article>
       </div>
