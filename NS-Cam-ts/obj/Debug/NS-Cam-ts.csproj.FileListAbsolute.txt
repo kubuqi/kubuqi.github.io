@@ -1,6 +1,0 @@
-c:\users\luke\documents\visual studio 2015\Projects\NS-Cam-ts\NS-Cam-ts\bin\NS-Cam-ts.dll.config
-c:\users\luke\documents\visual studio 2015\Projects\NS-Cam-ts\NS-Cam-ts\bin\NS-Cam-ts.dll
-c:\users\luke\documents\visual studio 2015\Projects\NS-Cam-ts\NS-Cam-ts\bin\NS-Cam-ts.pdb
-c:\users\luke\documents\visual studio 2015\Projects\NS-Cam-ts\NS-Cam-ts\obj\Debug\NS-Cam-ts.csprojResolveAssemblyReference.cache
-c:\users\luke\documents\visual studio 2015\Projects\NS-Cam-ts\NS-Cam-ts\obj\Debug\NS-Cam-ts.dll
-c:\users\luke\documents\visual studio 2015\Projects\NS-Cam-ts\NS-Cam-ts\obj\Debug\NS-Cam-ts.pdb
