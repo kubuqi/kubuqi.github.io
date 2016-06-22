@@ -1,3 +1,6 @@
 [submodule "NSWebcam"]
 	path = NSWebcam
 	url = https://github.com/kubuqi/NSWebcam.git
+[submodule "playground/NSWebcams"]
+	path = playground/NSWebcams
+	url = https://github.com/kubuqi/NSWebcam.git
