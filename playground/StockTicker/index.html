@@ -1,0 +1,34 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Stock Ticker with TypeScript</title>
+    <link rel="stylesheet" href="app.css" type="text/css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <script src="app.js"></script>
+</head>
+<body>
+    <h1>Simple & Stupid Stock Ticker</h1>
+    <span id="clock"></span>
+    <br />
+    <table id="stock_table" class="fixed">
+        <col width="120px" />
+        <col width="280px" />
+        <col width="120px" />
+        <col width="120px" />
+        <tr>
+            <td>Symbol</td>
+            <td>Name</td>
+            <td>Price($)</td>
+            <td>Change(%)</td>
+        </tr>
+    </table>
+    <br>
+    Use following input box to add Symbol to watch list. Click on a symbol to remove it. <br />
+    Some well known stock symbols: AAPL, BABA, CSCO, GOOG, INTC, JNPR, KO, MSFT, NFLX....<br />
+    <br />
+    <input type="text" id="add_symbol" value="TSLA">  <input type="button" id="add_button" value="Add to watch list">
+
+</body>
+</html>
